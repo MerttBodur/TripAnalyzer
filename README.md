@@ -1,5 +1,3 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kNr72eSq)
-
 # CMP2003 – Trip Analyzer Term Project
 
 ## Overview
@@ -21,235 +19,28 @@ By completing this project, students will demonstrate the ability to:
 
 ---
 
-## Files in This Repository
-
-### 1. `analyzer.h`
-Declares the public interface students must implement.
-
-Key structures:
-- `ZoneCount`: holds a zone ID and total trip count
-- `SlotCount`: holds a zone ID, hour (0–23), and trip count
-
-Key class:
-- `TripAnalyzer`
-  - `void ingestFile(const std::string& csvPath);`
-  - `std::vector<ZoneCount> topZones(int k = 10) const;`
-  - `std::vector<SlotCount> topBusySlots(int k = 10) const;`
-
-⚠️ **Do not change function signatures.**
+## How It Works
+1. The program reads the `.csv` file line by line.  
+2. Each line is parsed and the hour field is validated.  
+3. Incorrect entries are skipped using `continue`.  
+4. Valid data is inserted into an `unordered_map`.  
+5. The stored data is sorted by frequency.  
+6. The system outputs the most frequently used areas and hours.
 
 ---
 
-### 2. `main.cpp`
-A reference **driver program** used for:
-- Manual testing
-- Measuring execution time
-- Producing deterministic output format
+## Time Complexity
 
-It:
-1. Creates a `TripAnalyzer`
-2. Calls `ingestFile("SmallTrips.csv")`
-3. Prints:
-   - Top zones
-   - Top busy slots
-   - Execution time in milliseconds
+ingestFile -> topZones -> topBusySlots
 
-This file **does not contain grading logic**.
+O(n.lengthofinput) -> O(ZlogZ) -> O(SlogS)
+Z = number of elements inside the ZoneCounts map
+S = number of elements inside the SlotCounts map
+Since the dominant operation is the line-by-line ingestion and parsing of the CSV file, the overall time complexity of the program is O(n · L), where n is the number of rows and L is the maximum length of a row. Because L is bounded by the fixed CSV schema, the effective runtime is linear, O(n).
 
----
 
-### 3. `test_trip_analyzer.cpp`
-The **official grading test suite**, written using **Catch2**.
 
-It evaluates:
-- Robustness
-- Correctness
-- Sorting determinism
-- Performance under adversarial inputs
 
-This file is **read-only** for students.
 
----
 
-### 4. `catch_amalgamated.cpp / .hpp`
-The Catch2 testing framework (single-header + implementation).
 
-Used for:
-- Automated grading
-- Local testing
-
----
-
-### 5. `SmallTrips.csv`
-A **small sample dataset** for local development and debugging.
-
-⚠️ The grader will use **different and much larger hidden datasets**.
-
----
-
-### 6. `Makefile`
-Build configuration used by the autograder.
-
-Key properties:
-- C++17 standard
-- Separate compilation
-- Renames `main` if needed during testing
-
-Do not modify unless explicitly instructed.
-
----
-
-## CSV File Format
-
-Input files follow this schema:
-
-```
-TripID,PickupZoneID,PickupTime
-```
-
-Example:
-```
-1,Z1,2024-01-01 10:30
-2,Z2,2024-01-01 11:05
-```
-
-### Important Notes
-- Header row is always present
-- Rows may be malformed
-- Time format: `YYYY-MM-DD HH:MM`
-- Hour is extracted from `PickupTime`
-- Zone IDs are **case-sensitive**
-
----
-
-## Required Functionality
-
-### 1. `ingestFile`
-This function must:
-
-- Open the CSV file safely
-- Skip the header row
-- Parse rows one-by-one
-- **Never crash**, even if:
-  - Fields are missing
-  - Time format is invalid
-  - Lines are malformed
-- Count:
-  - Trips per zone
-  - Trips per (zone, hour) pair
-
-❌ Do NOT:
-- Assume all rows are valid
-- Terminate on bad input
-- Use third-party libraries
-
----
-
-### 2. `topZones(k)`
-Returns the top `k` zones sorted by:
-
-1. Trip count (descending)
-2. Zone ID (ascending, lexicographical)
-
-If fewer than `k` zones exist, return all.
-
----
-
-### 3. `topBusySlots(k)`
-Returns the top `k` (zone, hour) slots sorted by:
-
-1. Trip count (descending)
-2. Zone ID (ascending)
-3. Hour (ascending)
-
----
-
-## Grading Breakdown (70% Skeleton Coverage)
-
-### Category A – Robustness (15%)
-- Empty files
-- Dirty/malformed rows
-- Boundary hour values (00, 23)
-
-### Category B – Deterministic Sorting (20%)
-- Tie-breaking correctness
-- Case sensitivity
-- Stable ordering
-
-### Category C – Performance-Gated Correctness (35%)
-These tests **will fail** inefficient solutions.
-
-They include:
-- Hundreds of thousands of unique zones
-- Millions of rows
-- Adversarial distributions designed to kill O(n²) algorithms
-
-⚠️ Passing correctness but failing time limits = **FAIL**
-
----
-
-## Performance Expectations
-
-To pass all tests:
-
-- Aggregation must be **near O(n)**
-- Sorting should be **O(m log m)** where m is number of unique keys
-- Avoid:
-  - Nested linear searches
-  - Re-scanning containers
-  - Re-parsing strings unnecessarily
-
-STL containers such as `unordered_map`, `map`, `vector`, and `sort` are allowed.
-
----
-
-## Determinism Rules
-
-Your output must be **exactly reproducible**:
-
-- Same input → same output order
-- No reliance on hash iteration order
-- Always apply explicit sorting
-
----
-
-## Common Reasons for Failure
-
-- Using `vector` + linear search for counting
-- Ignoring malformed rows
-- Incorrect tie-breaking
-- Parsing hour incorrectly
-- Assuming clean input
-- Passing small tests but timing out on large inputs
-
----
-
-## Development Tips
-
-- Start with correctness on `SmallTrips.csv`
-- Add defensive parsing early
-- Test with artificially large inputs
-- Measure execution time locally
-- Always sort explicitly before returning results
-
----
-
-## Academic Integrity
-
-- Do not share code
-- Do not use AI-generated solutions directly
-- Hidden tests will detect:
-  - Hardcoded outputs
-  - Non-scalable logic
-  - Overfitted implementations
-
----
-
-## Final Notes
-
-This project is intentionally designed to:
-- Separate correct-but-slow solutions from efficient ones
-- Reward clean design and algorithmic thinking
-- Reflect real-world data engineering challenges
-
-Good luck, and write code that scales.
